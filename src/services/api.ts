@@ -139,6 +139,8 @@ export const payService = {
     amount: string | number;
     customerDetails: Customer;
     paymentType: "one_time" | "recurring";
+    businessId: string;
+    productId: string;
   }) => api.post(`/pay/card-payment`, data),
   verifyOtp: (data: {
     paymentId: string;

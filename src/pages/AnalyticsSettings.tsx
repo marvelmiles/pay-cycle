@@ -58,25 +58,25 @@ export const AnalyticsPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           title="Monthly Revenue"
-          value={formatCurrency(stats?.monthlyRevenue || 0)}
+          value={formatCurrency(stats?.monthRevenue || 0)}
           change={stats?.revenueGrowth}
           icon={<TrendingUp className="h-5 w-5 text-blue-600" />}
           iconBg="bg-blue-50"
         />
         <StatCard
-          title="MRR"
+          title="Suscription MRR"
           value={formatCurrency((subMetrics?.mrr || 0) * 100)}
           icon={<Repeat2 className="h-5 w-5 text-purple-600" />}
           iconBg="bg-purple-50"
         />
         <StatCard
-          title="ARR"
+          title="Subscription ARR"
           value={formatCurrency((subMetrics?.arr || 0) * 100)}
           icon={<TrendingUp className="h-5 w-5 text-green-600" />}
           iconBg="bg-green-50"
         />
         <StatCard
-          title="Churn Rate"
+          title="Subscripton Churn Rate"
           value={`${subMetrics?.churnRate || 0}%`}
           icon={<AlertTriangle className="h-5 w-5 text-red-500" />}
           iconBg="bg-red-50"
@@ -186,13 +186,13 @@ export const AnalyticsPage: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             {
-              label: "New This Month",
+              label: "New Subs This Month",
               value: subMetrics.newThisMonth,
               icon: <Users className="h-4 w-4 text-blue-600" />,
               bg: "bg-blue-50",
             },
             {
-              label: "Cancelled This Month",
+              label: "Cancelled Subs This Month",
               value: subMetrics.cancelledThisMonth,
               icon: <AlertTriangle className="h-4 w-4 text-red-500" />,
               bg: "bg-red-50",

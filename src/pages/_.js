@@ -118,6 +118,7 @@ function callback(createError, hostedFieldsInstance) {
 
 isw.hostedFields.create(configuration, callback);
 
+
 function handleBinConfigResponse(err, response) {
   loading = true;
   if (err != null && err.validationError === true) {

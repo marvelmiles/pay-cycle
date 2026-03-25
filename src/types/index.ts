@@ -56,11 +56,17 @@ export interface Transaction {
   amount: number;
   currency: string;
   status: "pending" | "successful" | "failed" | "refunded";
-  type: "one_time" | "subscription";
+  type: "one_time" | "recurring";
   reference: string;
-  customer: { firstName: string; lastName: string; email: string } | string;
-  product: { name: string; type: string } | string;
+  interswitchRef?: string;
+  paymentMethod?: string;
+  failureReason?: string;
+  customer: TransactionCustomer | string;
+  product: TransactionProduct | string;
+  subscription?: string;
+  metadata?: Record<string, unknown>;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Subscription {
@@ -148,4 +154,23 @@ export interface ApiResponse<T> {
   success: boolean;
   message: string;
   data: T;
+}
+
+export interface TransactionCustomer {
+  _id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  totalSpent?: number;
+}
+
+export interface TransactionProduct {
+  _id?: string;
+  name: string;
+  type: string;
+  price?: number;
+  currency?: string;
+  interval?: string;
+  description?: string;
 }

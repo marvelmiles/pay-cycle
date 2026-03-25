@@ -13,6 +13,11 @@ export type InitiateCardPaymentResponse = {
   responseCode: string;
   supportMessage: string;
   withOtp: boolean;
+  transactionId: string;
 };
 
-export type ConfirmPaymentProps = { trxRef: string; amount: string | number };
+export type ConfirmPaymentProps = {
+  trxRef: string;
+  amount: string | number;
+  businessId: string;
+};

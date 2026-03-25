@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   Calendar,
   KeyRound,
+  ArrowRight,
 } from "lucide-react";
 import { payService } from "../services/api";
 import { formatCurrency } from "../lib/utils";
@@ -28,6 +29,8 @@ import {
   ConfirmPaymentProps,
   InitiateCardPaymentResponse,
 } from "@/types/payment";
+import { normalizeError } from "@/utils/api";
+import routes from "@/constants/routes";
 
 // ─────────────────────────────────────────────
 // TYPES
@@ -41,11 +44,13 @@ interface ProductData {
   interval?: string;
   trialDays?: number;
   features?: string[];
+  _id: string;
 }
 interface BusinessData {
   name: string;
   logo?: string;
   email?: string;
+  _id: string;
 }
 interface PaymentLinkData {
   title: string;
@@ -274,17 +279,20 @@ const CardBadges = () => (
 //   pin: "1111",
 // };
 
-const BackButton: React.FC<{ onClick: () => void; text?: string }> = ({
-  onClick,
-  text = "Go Back",
-}) => (
+const RedirectButton: React.FC<{
+  onClick: () => void;
+  text?: string;
+  arrowPosition?: "left" | "right";
+}> = ({ onClick, text = "Go Back", arrowPosition = "left" }) => (
   <button
     type="button"
     onClick={onClick}
     className="w-full flex items-center justify-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 py-1 transition-colors"
   >
-    <ArrowLeft className="h-3.5 w-3.5" />
+    {arrowPosition === "left" && <ArrowLeft className="h-3.5 w-3.5" />}
     {text}
+
+    {arrowPosition === "right" && <ArrowRight className="h-3.5 w-3.5" />}
   </button>
 );
 
@@ -391,6 +399,8 @@ export const PayPage: React.FC = () => {
     try {
       const res = await payService.initiateCardPayment({
         paymentType: product.type,
+        productId: product._id,
+        businessId: business._id,
         cardDetails: {
           cvv: data.cvv.toString(),
           exp_date: data.expiry,
@@ -403,8 +413,13 @@ export const PayPage: React.FC = () => {
 
       toast.success(res.data.data.message);
 
-      setOpenOtp(res.data.data.withOtp);
+      const withOtp = res.data.data.withOtp;
+
       setPaymentData(res.data.data);
+
+      if (withOtp) setOpenOtp(withOtp);
+      else setOpenConfirmPayment(true);
+
       setPaying(false);
     } catch {
       setPayError(
@@ -415,6 +430,11 @@ export const PayPage: React.FC = () => {
   };
 
   const handleVerifyOtp = async () => {
+    const handleSuccess = () => {
+      toast.success("Payment verification successful");
+
+      setOpenConfirmPayment(true);
+    };
     try {
       if (!paymentData?.paymentId) {
         alert("Application Error: Missing payment id");
@@ -428,14 +448,29 @@ export const PayPage: React.FC = () => {
 
       setVerifyingOtp(true);
 
-      const res = await payService.verifyOtp({
+      await payService.verifyOtp({
         paymentId: paymentData.paymentId,
         otp,
       });
 
-      toast.success(res.data.data.message);
-      setOpenConfirmPayment(true);
+      handleSuccess();
     } catch (err) {
+      const error = normalizeError(err);
+
+      console.log(error);
+
+      if (error.status === 409) {
+        const bool =
+          (error.errors?.[0]?.message || "")
+            .toLowerCase()
+            .indexOf("payment_already_processed") > -1;
+
+        if (bool) {
+          handleSuccess();
+          return;
+        }
+      }
+
       setPayError("Failed to verify");
     } finally {
       setVerifyingOtp(false);
@@ -443,7 +478,7 @@ export const PayPage: React.FC = () => {
   };
 
   const resetBtn = (
-    <BackButton
+    <RedirectButton
       text="Back to your details"
       onClick={() => {
         setStep(1);
@@ -710,10 +745,12 @@ export const PayPage: React.FC = () => {
                       </div>
                     ) : openConfirmPayment ? (
                       <ConfirmPayment
+                        transactionId={paymentData?.transactionId!}
                         currency={product.currency}
                         amount={Number(paymentData?.amount)!}
                         trxRef={paymentData?.transactionRef!}
                         resetBtn={resetBtn}
+                        businessId={business._id}
                       />
                     ) : openOtp ? (
                       <div className="space-y-8">
@@ -962,19 +999,26 @@ const ConfirmPayment: React.FC<
     currency: string;
     amount: number;
     resetBtn?: React.ReactNode;
+    businessId: string;
+    transactionId: string;
   }
-> = ({ amount, trxRef, currency, resetBtn }) => {
+> = ({ amount, trxRef, currency, resetBtn, businessId, transactionId }) => {
   const [result, setResult] = useState<"loading" | "success" | "failed">(
     "loading",
   );
 
-  const handleRedirect = () => {};
+  const navigate = useNavigate();
+
+  const handleRedirect = () => {
+    navigate(routes.transactionDetails(transactionId));
+  };
 
   useEffect(() => {
     payService
       .confirmPayment({
         amount,
         trxRef,
+        businessId,
       })
       .then((res) => {
         const isSuccess = res.data.data.responseCode === "SUCCESS";
@@ -989,7 +1033,7 @@ const ConfirmPayment: React.FC<
         setResult(isSuccess ? "success" : "failed");
       })
       .catch(() => setResult("failed"));
-  }, [amount, trxRef]);
+  }, [amount, trxRef, businessId]);
 
   return (
     <div className="text-center">
@@ -1022,7 +1066,11 @@ const ConfirmPayment: React.FC<
               </span>
             </div>
           )}
-          <BackButton text="Go to dashboard" onClick={handleRedirect} />
+          <RedirectButton
+            arrowPosition="right"
+            text="View Transaction Details"
+            onClick={handleRedirect}
+          />
         </div>
       )}
       {result === "failed" && (

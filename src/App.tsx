@@ -13,6 +13,7 @@ import {
 import { PaymentLinksPage, ApiTokensPage } from "./pages/PaymentLinksTokens";
 import { AnalyticsPage, SettingsPage } from "./pages/AnalyticsSettings";
 import { PayPage } from "./pages/PayPage";
+import TransactionDetailsPage from "./pages/TransactionDetailsPage";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -68,6 +69,7 @@ const App: React.FC = () => {
           <Route path="products" element={<ProductsPage />} />
           <Route path="customers" element={<CustomersPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="transactions/:id" element={<TransactionDetailsPage />} />
           <Route path="subscriptions" element={<SubscriptionsPage />} />
           <Route path="payment-links" element={<PaymentLinksPage />} />
           <Route path="api-tokens" element={<ApiTokensPage />} />
