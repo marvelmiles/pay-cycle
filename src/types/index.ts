@@ -3,7 +3,7 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'business_owner' | 'admin' | 'developer';
+  role: "business_owner" | "admin" | "developer";
 }
 
 export interface Business {
@@ -29,10 +29,10 @@ export interface Product {
   _id: string;
   name: string;
   description?: string;
-  type: 'one_time' | 'recurring';
+  type: "one_time" | "recurring";
   price: number;
   currency: string;
-  interval?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  interval?: "daily" | "weekly" | "monthly" | "yearly";
   intervalCount?: number;
   trialDays?: number;
   features: string[];
@@ -55,8 +55,8 @@ export interface Transaction {
   _id: string;
   amount: number;
   currency: string;
-  status: 'pending' | 'successful' | 'failed' | 'refunded';
-  type: 'one_time' | 'subscription';
+  status: "pending" | "successful" | "failed" | "refunded";
+  type: "one_time" | "subscription";
   reference: string;
   customer: { firstName: string; lastName: string; email: string } | string;
   product: { name: string; type: string } | string;
@@ -65,7 +65,13 @@ export interface Transaction {
 
 export interface Subscription {
   _id: string;
-  status: 'active' | 'cancelled' | 'past_due' | 'trialing' | 'paused' | 'expired';
+  status:
+    | "active"
+    | "cancelled"
+    | "past_due"
+    | "trialing"
+    | "paused"
+    | "expired";
   currentPeriodStart: string;
   currentPeriodEnd: string;
   cancelAtPeriodEnd: boolean;
@@ -87,13 +93,14 @@ export interface PaymentLink {
   maxUses?: number;
   expiresAt?: string;
   createdAt: string;
+  product: any;
 }
 
 export interface ApiToken {
   _id: string;
   name: string;
   token: string;
-  type: 'live' | 'test';
+  type: "live" | "test";
   lastUsedAt?: string;
   permissions: string[];
   isActive: boolean;

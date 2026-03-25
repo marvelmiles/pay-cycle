@@ -1,24 +1,36 @@
-import React, { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard, Package, Users, CreditCard, Repeat2,
-  Link2, Key, BarChart3, Settings, LogOut, Menu, X,
-  ChevronDown, Bell, Zap,
-} from 'lucide-react';
-import { cn, getInitials } from '../lib/utils';
-import { useAuthStore } from '../stores/auth.store';
-import { authService } from '../services/api';
+  LayoutDashboard,
+  Package,
+  Users,
+  CreditCard,
+  Repeat2,
+  Link2,
+  Key,
+  BarChart3,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  ChevronDown,
+  Bell,
+  Zap,
+} from "lucide-react";
+import { cn, getInitials } from "../lib/utils";
+import { useAuthStore } from "../stores/auth.store";
+import { authService } from "../services/api";
 
 const NAV = [
-  { label: 'Overview', icon: LayoutDashboard, to: '/dashboard' },
-  { label: 'Products', icon: Package, to: '/dashboard/products' },
-  { label: 'Customers', icon: Users, to: '/dashboard/customers' },
-  { label: 'Transactions', icon: CreditCard, to: '/dashboard/transactions' },
-  { label: 'Subscriptions', icon: Repeat2, to: '/dashboard/subscriptions' },
-  { label: 'Payment Links', icon: Link2, to: '/dashboard/payment-links' },
-  { label: 'API Tokens', icon: Key, to: '/dashboard/api-tokens' },
-  { label: 'Analytics', icon: BarChart3, to: '/dashboard/analytics' },
-  { label: 'Settings', icon: Settings, to: '/dashboard/settings' },
+  { label: "Overview", icon: LayoutDashboard, to: "/dashboard" },
+  { label: "Products", icon: Package, to: "/dashboard/products" },
+  { label: "Customers", icon: Users, to: "/dashboard/customers" },
+  { label: "Transactions", icon: CreditCard, to: "/dashboard/transactions" },
+  // { label: 'Subscriptions', icon: Repeat2, to: '/dashboard/subscriptions' },
+  { label: "Payment Links", icon: Link2, to: "/dashboard/payment-links" },
+  // { label: 'API Tokens', icon: Key, to: '/dashboard/api-tokens' },
+  { label: "Analytics", icon: BarChart3, to: "/dashboard/analytics" },
+  { label: "Settings", icon: Settings, to: "/dashboard/settings" },
 ];
 
 export const DashboardLayout: React.FC = () => {
@@ -28,16 +40,22 @@ export const DashboardLayout: React.FC = () => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    try { await authService.logout(); } catch { /* ignore */ }
+    try {
+      await authService.logout();
+    } catch {
+      /* ignore */
+    }
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
-    <aside className={cn(
-      'flex flex-col bg-gray-950 text-white h-full',
-      mobile ? 'w-full' : 'w-64 min-w-[16rem]'
-    )}>
+    <aside
+      className={cn(
+        "flex flex-col bg-gray-950 text-white h-full",
+        mobile ? "w-full" : "w-64 min-w-[16rem]",
+      )}
+    >
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-800">
         <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg">
@@ -49,8 +67,12 @@ export const DashboardLayout: React.FC = () => {
       {/* Business badge */}
       {business && (
         <div className="mx-3 mt-3 px-3 py-2.5 bg-gray-900 rounded-lg border border-gray-800">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Workspace</p>
-          <p className="text-sm text-white font-semibold mt-0.5 truncate">{business.name}</p>
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
+            Workspace
+          </p>
+          <p className="text-sm text-white font-semibold mt-0.5 truncate">
+            {business.name}
+          </p>
         </div>
       )}
 
@@ -60,13 +82,15 @@ export const DashboardLayout: React.FC = () => {
           <NavLink
             key={to}
             to={to}
-            end={to === '/dashboard'}
+            end={to === "/dashboard"}
             onClick={() => setSidebarOpen(false)}
             className={({ isActive }) =>
-              cn('flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+              cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800')
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-400 hover:text-white hover:bg-gray-800",
+              )
             }
           >
             <Icon className="h-4 w-4 flex-shrink-0" />
@@ -77,8 +101,10 @@ export const DashboardLayout: React.FC = () => {
 
       {/* User section */}
       <div className="px-3 py-3 border-t border-gray-800">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 cursor-pointer"
-          onClick={handleLogout}>
+        <div
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 cursor-pointer"
+          onClick={handleLogout}
+        >
           <LogOut className="h-4 w-4 text-gray-400" />
           <span className="text-sm text-gray-400">Sign out</span>
         </div>
@@ -96,7 +122,10 @@ export const DashboardLayout: React.FC = () => {
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setSidebarOpen(false)} />
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setSidebarOpen(false)}
+          />
           <div className="absolute left-0 top-0 bottom-0 w-72">
             <Sidebar mobile />
           </div>
@@ -127,10 +156,12 @@ export const DashboardLayout: React.FC = () => {
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
               >
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-semibold">
-                  {user ? getInitials(user.firstName, user.lastName) : 'U'}
+                  {user ? getInitials(user.firstName, user.lastName) : "U"}
                 </div>
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-gray-900">{user?.firstName} {user?.lastName}</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {user?.firstName} {user?.lastName}
+                  </p>
                   <p className="text-xs text-gray-500">{user?.email}</p>
                 </div>
                 <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -138,13 +169,20 @@ export const DashboardLayout: React.FC = () => {
 
               {userMenuOpen && (
                 <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl border border-gray-200 shadow-lg z-10 py-1">
-                  <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                    onClick={() => { setUserMenuOpen(false); navigate('/dashboard/settings'); }}>
+                  <button
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => {
+                      setUserMenuOpen(false);
+                      navigate("/dashboard/settings");
+                    }}
+                  >
                     <Settings className="h-4 w-4" /> Settings
                   </button>
                   <div className="border-t border-gray-100 my-1" />
-                  <button className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                    onClick={handleLogout}>
+                  <button
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    onClick={handleLogout}
+                  >
                     <LogOut className="h-4 w-4" /> Sign out
                   </button>
                 </div>
