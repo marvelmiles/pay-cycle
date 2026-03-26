@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, Package, MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { productService } from "../services/api";
+import { productService } from "../../services/api";
 import {
   Button,
   Card,
@@ -12,13 +12,12 @@ import {
   Pagination,
   Modal,
   Input,
-  Select,
   Textarea,
   EmptyState,
   LoadingSpinner,
-} from "../components/ui";
-import { formatCurrency, formatDate } from "../lib/utils";
-import type { Product } from "../types";
+} from "../../components/ui";
+import { formatCurrency, formatDate } from "../../lib/utils";
+import type { Product } from "../../types";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,7 +55,6 @@ export const ProductsPage: React.FC = () => {
     resolver: zodResolver(schema),
     defaultValues: { currency: "NGN" },
   });
-
 
   const openCreate = () => {
     setEditing(null);

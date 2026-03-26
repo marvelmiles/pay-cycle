@@ -4,7 +4,6 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://pay-cycle-backend.onrender.com/api/v1",
-  headers: { "Content-Type": "application/json" },
   timeout: 15000,
 });
 
@@ -67,7 +66,10 @@ export const authService = {
 // ==================== PROFILE ====================
 export const profileService = {
   getMe: () => api.get("/profile/me"),
-  updateProfile: (data: Record<string, unknown>) => api.put("/profile/me", data),
+  updateProfile: (data: FormData | Record<string, unknown>) =>
+    api.put("/profile/me", data),
+  updateBusiness: (data: FormData | Record<string, unknown>) =>
+    api.put("/profile/business", data),
 };
 
 // ==================== PRODUCTS ====================

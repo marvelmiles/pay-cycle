@@ -21,9 +21,9 @@ import {
   KeyRound,
   ArrowRight,
 } from "lucide-react";
-import { payService } from "../services/api";
-import { formatCurrency } from "../lib/utils";
-import { Button, OtpInput } from "../components/ui";
+import { payService } from "../../services/api";
+import { formatCurrency } from "../../lib/utils";
+import { Button, OtpInput } from "../../components/ui";
 import toast from "react-hot-toast";
 import {
   ConfirmPaymentProps,
@@ -40,7 +40,7 @@ interface ProductData {
   description?: string;
   price: number;
   currency: string;
-  type: "one_time" | "recurring";
+  type: "one_time";
   interval?: string;
   trialDays?: number;
   features?: string[];

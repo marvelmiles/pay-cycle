@@ -8,39 +8,25 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
 } from "recharts";
 import {
   DollarSign,
   Users,
-  Repeat2,
   TrendingUp,
   CreditCard,
   AlertTriangle,
 } from "lucide-react";
-import { analyticsService } from "../services/api";
+import { analyticsService } from "../../services/api";
 import {
   StatCard,
   Card,
   CardHeader,
   CardBody,
   LoadingSpinner,
-} from "../components/ui";
-import { formatCurrency, formatDate } from "../lib/utils";
-import { useAuthStore } from "../stores/auth.store";
-import type { RevenueDataPoint } from "../types";
-
-const PIE_COLORS = [
-  "#3B82F6",
-  "#F59E0B",
-  "#EF4444",
-  "#8B5CF6",
-  "#10B981",
-  "#6B7280",
-];
+} from "../../components/ui";
+import { formatCurrency, formatDate } from "../../lib/utils";
+import { useAuthStore } from "../../stores/auth.store";
+import type { RevenueDataPoint } from "../../types";
 
 export const DashboardPage: React.FC = () => {
   const { user, business } = useAuthStore();
@@ -60,7 +46,6 @@ export const DashboardPage: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
           Good{" "}
