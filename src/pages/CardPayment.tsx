@@ -4,7 +4,7 @@ import React from "react";
 const CardPayment = () => {
   const handlePayment = async () => {
     try {
-      const res = await api.post("/public/pay/card-payment");
+      const res = await api.post("/pay/card-payment");
 
       console.log(res);
     } catch (err) {

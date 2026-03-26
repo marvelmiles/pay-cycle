@@ -50,17 +50,17 @@ export const LoginPage: React.FC = () => {
           <div className="flex items-center justify-center w-9 h-9 bg-blue-600 rounded-xl">
             <Zap className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-white">BillFlow</span>
+          <span className="text-xl font-bold text-white">PayCycle</span>
         </div>
         <div>
-          <blockquote className="text-2xl font-medium text-white leading-relaxed">
-            "The simplest way to handle billing and subscriptions for Nigerian
-            businesses."
+          <blockquote className="text-5xl font-medium text-white">
+            Payment Checkout for Nigerian Businesses
           </blockquote>
+
           <div className="mt-8 flex gap-8">
             {[
-              ["10k+", "Transactions"],
-              ["₦2B+", "Processed"],
+              ["1k+", "Transactions"],
+              ["₦2M+", "Processed"],
               ["99.9%", "Uptime"],
             ].map(([val, label]) => (
               <div key={label}>
@@ -71,7 +71,7 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
         <p className="text-gray-600 text-sm">
-          © 2025 BillFlow. Built for Nigeria.
+          © 2025 PayCycle. Built for Nigeria.
         </p>
       </div>
 
@@ -82,7 +82,7 @@ export const LoginPage: React.FC = () => {
             <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg">
               <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="text-lg font-bold text-gray-900">BillFlow</span>
+            <span className="text-lg font-bold text-gray-900">PayCycle</span>
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
@@ -199,7 +199,7 @@ export const RegisterPage: React.FC = () => {
           <div className="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-lg">
             <Zap className="h-4 w-4 text-white" />
           </div>
-          <span className="text-lg font-bold text-gray-900">BillFlow</span>
+          <span className="text-lg font-bold text-gray-900">PayCycle</span>
         </div>
 
         <h1 className="text-2xl font-bold text-gray-900">

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   AreaChart,
   Area,
@@ -11,18 +11,24 @@ import {
   BarChart,
   Bar,
 } from "recharts";
-import { analyticsService } from "../services/api";
+import { analyticsService, profileService } from "../services/api";
 import {
   Card,
   CardHeader,
   CardBody,
   LoadingSpinner,
   StatCard,
+  Button,
+  Input,
 } from "../components/ui";
 import { formatCurrency, formatDate } from "../lib/utils";
-import { TrendingUp, Repeat2, Users, AlertTriangle } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { useAuthStore } from "../stores/auth.store";
 import type { RevenueDataPoint } from "../types";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import toast from "react-hot-toast";
 
 // ===========================
 // ANALYTICS PAGE
@@ -38,11 +44,6 @@ export const AnalyticsPage: React.FC = () => {
   const { data: revenueData, isLoading: revenueLoading } = useQuery({
     queryKey: ["revenue-chart", period],
     queryFn: () => analyticsService.revenue(period).then((r) => r.data.data),
-  });
-
-  const { data: subMetrics } = useQuery({
-    queryKey: ["subscription-metrics"],
-    queryFn: () => analyticsService.subscriptions().then((r) => r.data.data),
   });
 
   return (
@@ -62,24 +63,6 @@ export const AnalyticsPage: React.FC = () => {
           change={stats?.revenueGrowth}
           icon={<TrendingUp className="h-5 w-5 text-blue-600" />}
           iconBg="bg-blue-50"
-        />
-        <StatCard
-          title="Suscription MRR"
-          value={formatCurrency((subMetrics?.mrr || 0) * 100)}
-          icon={<Repeat2 className="h-5 w-5 text-purple-600" />}
-          iconBg="bg-purple-50"
-        />
-        <StatCard
-          title="Subscription ARR"
-          value={formatCurrency((subMetrics?.arr || 0) * 100)}
-          icon={<TrendingUp className="h-5 w-5 text-green-600" />}
-          iconBg="bg-green-50"
-        />
-        <StatCard
-          title="Subscripton Churn Rate"
-          value={`${subMetrics?.churnRate || 0}%`}
-          icon={<AlertTriangle className="h-5 w-5 text-red-500" />}
-          iconBg="bg-red-50"
         />
       </div>
 
@@ -180,42 +163,6 @@ export const AnalyticsPage: React.FC = () => {
           )}
         </CardBody>
       </Card>
-
-      {/* Subscription metrics row */}
-      {subMetrics && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            {
-              label: "New Subs This Month",
-              value: subMetrics.newThisMonth,
-              icon: <Users className="h-4 w-4 text-blue-600" />,
-              bg: "bg-blue-50",
-            },
-            {
-              label: "Cancelled Subs This Month",
-              value: subMetrics.cancelledThisMonth,
-              icon: <AlertTriangle className="h-4 w-4 text-red-500" />,
-              bg: "bg-red-50",
-            },
-            {
-              label: "Payment Success Rate",
-              value: `${stats?.paymentSuccessRate || 0}%`,
-              icon: <TrendingUp className="h-4 w-4 text-green-600" />,
-              bg: "bg-green-50",
-            },
-          ].map(({ label, value, icon, bg }) => (
-            <Card key={label}>
-              <CardBody className="flex items-center gap-3">
-                <div className={`p-2.5 rounded-lg ${bg}`}>{icon}</div>
-                <div>
-                  <p className="text-xs text-gray-500">{label}</p>
-                  <p className="text-xl font-bold text-gray-900">{value}</p>
-                </div>
-              </CardBody>
-            </Card>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
@@ -223,14 +170,65 @@ export const AnalyticsPage: React.FC = () => {
 // ===========================
 // SETTINGS PAGE
 // ===========================
-export const SettingsPage: React.FC = () => {
-  const { user, business } = useAuthStore();
-  const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
+const profileSchema = z.object({
+  firstName: z.string().min(1, "Required"),
+  lastName: z.string().min(1, "Required"),
+});
+type ProfileForm = z.infer<typeof profileSchema>;
+
+const businessSchema = z.object({
+  name: z.string().min(1, "Required"),
+  slug: z
+    .string()
+    .min(1, "Required")
+    .regex(/^[a-z0-9-]+$/, "Only letters, numbers and dashes"),
+});
+type BusinessForm = z.infer<typeof businessSchema>;
+
+export const SettingsPage: React.FC = () => {
+  const { user, business, updateUser, updateBusiness } = useAuthStore();
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [editingBusiness, setEditingBusiness] = useState(false);
+
+  const profileForm = useForm<ProfileForm>({
+    resolver: zodResolver(profileSchema),
+    values: {
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+    },
+  });
+
+  const businessForm = useForm<BusinessForm>({
+    resolver: zodResolver(businessSchema),
+    values: {
+      name: business?.name || "",
+      slug: business?.slug || "",
+    },
+  });
+
+  const profileMutation = useMutation({
+    mutationFn: (data: Record<string, unknown>) => profileService.updateProfile(data),
+    onSuccess: (res) => {
+      const data = res.data.data;
+      if (data.firstName || data.lastName) {
+        updateUser(data);
+        toast.success("Profile updated");
+        setEditingProfile(false);
+      } else if (data.name || data.slug) {
+        updateBusiness(data);
+        toast.success("Business updated");
+        setEditingBusiness(false);
+      } else {
+        // Fallback for generic updates
+        toast.success("Settings updated");
+        setEditingProfile(false);
+        setEditingBusiness(false);
+      }
+    },
+    onError: () => toast.error("Failed to update settings"),
+  });
+
 
   return (
     <div className="p-6 space-y-6 max-w-3xl">
@@ -244,106 +242,192 @@ export const SettingsPage: React.FC = () => {
       {/* Profile */}
       <Card>
         <CardHeader>
-          <h2 className="font-semibold text-gray-900">Profile</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">Profile</h2>
+            {!editingProfile && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setEditingProfile(true)}
+              >
+                Edit
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardBody className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                First Name
-              </label>
-              <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
-                {user?.firstName}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Last Name
-              </label>
-              <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
-                {user?.lastName}
-              </p>
-            </div>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Email</label>
-            <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
-              {user?.email}
-            </p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Role</label>
-            <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900 capitalize">
-              {user?.role?.replace("_", " ")}
-            </p>
-          </div>
+          {editingProfile ? (
+            <form
+              onSubmit={profileForm.handleSubmit((data) =>
+                profileMutation.mutate(data),
+              )}
+              className="space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="First Name"
+                  {...profileForm.register("firstName")}
+                  error={profileForm.formState.errors.firstName?.message}
+                />
+                <Input
+                  label="Last Name"
+                  {...profileForm.register("lastName")}
+                  error={profileForm.formState.errors.lastName?.message}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingProfile(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  loading={profileMutation.isPending}
+                >
+                  Save
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    First Name
+                  </label>
+                  <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
+                    {user?.firstName}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
+                    {user?.lastName}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
+                  {user?.email}
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Role
+                </label>
+                <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900 capitalize">
+                  {user?.role?.replace("_", " ")}
+                </p>
+              </div>
+            </>
+          )}
         </CardBody>
       </Card>
 
       {/* Business */}
       <Card>
         <CardHeader>
-          <h2 className="font-semibold text-gray-900">Business</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-gray-900">Business</h2>
+            {!editingBusiness && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setEditingBusiness(true)}
+              >
+                Edit
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardBody className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Business Name
-              </label>
-              <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
-                {business?.name}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">Slug</label>
-              <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-500 font-mono">
-                {business?.slug}
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Currency
-              </label>
-              <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
-                {business?.settings?.currency || "NGN"}
-              </p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Timezone
-              </label>
-              <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
-                {business?.settings?.timezone || "Africa/Lagos"}
-              </p>
-            </div>
-          </div>
+          {editingBusiness ? (
+            <form
+              onSubmit={businessForm.handleSubmit((data) =>
+                profileMutation.mutate(data),
+              )}
+              className="space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Business Name"
+                  {...businessForm.register("name")}
+                  error={businessForm.formState.errors.name?.message}
+                />
+                <Input
+                  label="Slug"
+                  {...businessForm.register("slug")}
+                  error={businessForm.formState.errors.slug?.message}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setEditingBusiness(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  size="sm"
+                  loading={profileMutation.isPending}
+                >
+                  Save
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Business Name
+                  </label>
+                  <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
+                    {business?.name}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Slug
+                  </label>
+                  <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-500 font-mono">
+                    {business?.slug}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Currency
+                  </label>
+                  <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
+                    {business?.settings?.currency || "NGN"}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Timezone
+                  </label>
+                  <p className="mt-1 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-900">
+                    {business?.settings?.timezone || "Africa/Lagos"}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
         </CardBody>
       </Card>
-
-      {/* Webhook */}
-      {/* <Card>
-        <CardHeader>
-          <h2 className="font-semibold text-gray-900">Webhooks</h2>
-        </CardHeader>
-        <CardBody className="space-y-4">
-          <p className="text-sm text-gray-500">
-            BillFlow will send POST requests to your webhook URL for events like payment success, subscription renewal, and failures.
-          </p>
-          <div>
-            <label className="text-sm font-medium text-gray-700">Webhook URL</label>
-            <input className="mt-1 w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="https://yourapp.com/webhooks/billflow"
-              defaultValue={business?.settings?.webhookUrl || ''} />
-          </div>
-          <button onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
-            {saved ? '✓ Saved' : 'Save Webhook URL'}
-          </button>
-        </CardBody>
-      </Card> */}
 
       {/* Interswitch */}
       <Card>

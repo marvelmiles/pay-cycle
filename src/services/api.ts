@@ -3,7 +3,7 @@ import { Customer } from "@/types/user";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: "https://pay-cycle-backend.onrender.com/api/v1",
   headers: { "Content-Type": "application/json" },
   timeout: 15000,
 });
@@ -60,9 +60,14 @@ export const authService = {
   login: (data: { email: string; password: string }) =>
     api.post("/auth/login", data),
   logout: () => api.post("/auth/logout"),
-  getMe: () => api.get("/auth/me"),
   refresh: (refreshToken: string) =>
     api.post("/auth/refresh", { refreshToken }),
+};
+
+// ==================== PROFILE ====================
+export const profileService = {
+  getMe: () => api.get("/profile/me"),
+  updateProfile: (data: Record<string, unknown>) => api.put("/profile/me", data),
 };
 
 // ==================== PRODUCTS ====================
@@ -110,7 +115,6 @@ export const analyticsService = {
   dashboard: () => api.get("/analytics/dashboard"),
   revenue: (period?: string) =>
     api.get("/analytics/revenue", { params: { period } }),
-  subscriptions: () => api.get("/analytics/subscriptions"),
 };
 
 // ==================== PAYMENT LINKS ====================
@@ -131,14 +135,14 @@ export const apiTokenService = {
   revoke: (id: string) => api.delete(`/api-tokens/${id}`),
 };
 
-// ==================== PUBLIC PAY (no auth) ====================
+// ==================== PAY (no auth) ====================
 export const payService = {
-  getLink: (slug: string) => api.get(`/public/pay/${slug}`),
+  getLink: (slug: string) => api.get(`/payment-links/${slug}`),
   initiateCardPayment: (data: {
     cardDetails: DebitCard;
     amount: string | number;
     customerDetails: Customer;
-    paymentType: "one_time" | "recurring";
+    paymentType: "one_time";
     businessId: string;
     productId: string;
   }) => api.post(`/pay/card-payment`, data),

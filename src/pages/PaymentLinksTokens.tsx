@@ -85,7 +85,6 @@ export const PaymentLinksPage: React.FC = () => {
     queryFn: () => paymentLinkService.list().then((r) => r.data),
   });
 
-  // Load products for the dropdown
   const { data: productsData } = useQuery({
     queryKey: ["products", 1],
     queryFn: () =>
@@ -271,7 +270,6 @@ export const PaymentLinksPage: React.FC = () => {
           onSubmit={handleSubmit((d) => createMutation.mutate(d))}
           className="space-y-4"
         >
-          {/* Product selector — REQUIRED */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">
               Product <span className="text-red-500">*</span>
@@ -312,12 +310,7 @@ export const PaymentLinksPage: React.FC = () => {
                   )}
                 </span>
               </div>
-              <p className="text-blue-600 text-xs mt-0.5 capitalize">
-                {selectedProduct.type.replace("_", " ")} payment
-                {selectedProduct.trialDays
-                  ? ` · ${selectedProduct.trialDays}-day trial`
-                  : ""}
-              </p>
+             
             </div>
           )}
 
@@ -540,7 +533,7 @@ export const ApiTokensPage: React.FC = () => {
           <CardBody>
             <EmptyState
               title="No API tokens"
-              description="Generate a token to integrate BillFlow SDK into your application."
+              description="Generate a token to integrate PayCycle SDK into your application."
               icon={<Key className="h-12 w-12" />}
               action={
                 <Button
