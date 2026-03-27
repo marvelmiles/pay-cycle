@@ -35,9 +35,7 @@ Built on top of **Interswitch** as the payment gateway, PayCycle handles the ful
 | 📊 **Transaction Tracking** | Full transaction history with status, gateway ref, and detail view            |
 | 💰 **Wallet & Payouts**     | Available balance, withdrawal requests, payout account management             |
 | 📈 **Analytics Dashboard**  | Revenue charts, MRR, churn rate, payment success rate                         |
-| 🔑 **API Tokens**           | Generate live/test API tokens for SDK integration                             |
 | 🔐 **JWT Authentication**   | Secure login, registration, and refresh token support                         |
-| 🏦 **Nigerian Banks**       | Full list of Nigerian banks for payout account setup                          |
 
 ---
 
