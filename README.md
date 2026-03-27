@@ -59,7 +59,6 @@ Built on top of **Interswitch** as the payment gateway, PayCycle handles the ful
 **The following is fully functional:**
 
 - One-time payment checkout via payment links ✅
-- Recurring product creation (backend) ✅
 - Transaction recording and tracking ✅
 - Wallet and payout management ✅
 
