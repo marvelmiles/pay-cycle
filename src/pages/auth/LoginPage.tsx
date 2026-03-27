@@ -71,7 +71,7 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
         <p className="text-gray-600 text-sm">
-          © 2025 PayCycle. Built for Nigeria.
+          © {new Date().getFullYear()} PayCycle. Built for ease.
         </p>
       </div>
 
