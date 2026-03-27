@@ -5,26 +5,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
   Wallet,
-  ArrowDownToLine,
   Clock,
   CheckCircle,
   XCircle,
   RefreshCw,
   TrendingUp,
   TrendingDown,
-  Plus,
-  Trash2,
-  Star,
   AlertTriangle,
-  ChevronRight,
   Banknote,
-  CreditCard,
-  Repeat2,
   X,
 } from "lucide-react";
 import { cn, formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
 import { walletService } from "@/services/api";
-import { Transaction, TransactionCustomer, TransactionProduct } from "@/types";
 import {
   Button,
   Card,
@@ -32,28 +24,9 @@ import {
   CardHeader,
   EmptyState,
   LoadingSpinner,
-  StatusBadge,
 } from "@/components/ui";
 import { useAuthStore } from "@/stores/auth.store";
 import { EditBankDetailsCard } from "../settings/SettingsPage";
-
-// ─── Types ────────────────────────────────────────────────────────
-interface WalletData {
-  pendingBalance: number;
-  totalEarned: number;
-  totalWithdrawn: number;
-}
-
-interface PayoutAccount {
-  _id: string;
-  bankName: string;
-  bankCode: string;
-  accountNumber: string;
-  accountName: string;
-  isDefault: boolean;
-  isVerified: boolean;
-  createdAt: string;
-}
 
 interface Withdrawal {
   _id: string;
@@ -72,40 +45,6 @@ interface Withdrawal {
   createdAt: string;
 }
 
-// ─── NIGERIAN BANKS ───────────────────────────────────────────────
-const NG_BANKS = [
-  "Access Bank",
-  "Citibank",
-  "Ecobank",
-  "Fidelity Bank",
-  "First Bank",
-  "First City Monument Bank (FCMB)",
-  "Globus Bank",
-  "Guaranty Trust Bank (GTB)",
-  "Heritage Bank",
-  "Jaiz Bank",
-  "Keystone Bank",
-  "Kuda Bank",
-  "Moniepoint Microfinance Bank",
-  "Opay",
-  "Palmpay",
-  "Polaris Bank",
-  "Premium Trust Bank",
-  "Providus Bank",
-  "Stanbic IBTC Bank",
-  "Standard Chartered",
-  "Sterling Bank",
-  "SunTrust Bank",
-  "Titan Trust Bank",
-  "UBA",
-  "Union Bank",
-  "Unity Bank",
-  "VFD Microfinance Bank",
-  "Wema Bank",
-  "Zenith Bank",
-];
-
-// ─── Status meta ──────────────────────────────────────────────────
 const W_STATUS: Record<
   string,
   { icon: React.ReactNode; color: string; bg: string }
@@ -137,7 +76,6 @@ const W_STATUS: Record<
   },
 };
 
-// ─── Balance card ────────────────────────────────────────────────
 const BalanceCard: React.FC<{
   label: string;
   amount: number;
@@ -194,78 +132,6 @@ const BalanceCard: React.FC<{
   </div>
 );
 
-// ─── Payout account card ─────────────────────────────────────────
-const AccountCard: React.FC<{
-  account: PayoutAccount;
-  onSetDefault: () => void;
-  onDelete: () => void;
-  deletingId: string | null;
-}> = ({ account, onSetDefault, onDelete, deletingId }) => (
-  <div
-    className={cn(
-      "flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-colors",
-      account.isDefault
-        ? "bg-blue-50 border-blue-200"
-        : "bg-white border-gray-200 hover:border-gray-300",
-    )}
-  >
-    <div
-      className={cn(
-        "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold",
-        account.isDefault
-          ? "bg-blue-600 text-white"
-          : "bg-gray-100 text-gray-600",
-      )}
-    >
-      {account.bankName[0]}
-    </div>
-
-    <div className="flex-1 min-w-0">
-      <div className="flex items-center gap-2 flex-wrap">
-        <p className="text-sm font-semibold text-gray-900 truncate">
-          {account.bankName}
-        </p>
-        {account.isDefault && (
-          <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-medium">
-            <Star className="h-2.5 w-2.5" /> Default
-          </span>
-        )}
-        {account.isVerified && (
-          <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">
-            <CheckCircle className="h-2.5 w-2.5" /> Verified
-          </span>
-        )}
-      </div>
-      <p className="text-sm text-gray-500 mt-0.5">
-        {account.accountName} · ···{account.accountNumber.slice(-4)}
-      </p>
-    </div>
-
-    <div className="flex items-center gap-1 flex-shrink-0">
-      {!account.isDefault && (
-        <button
-          onClick={onSetDefault}
-          className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          Set default
-        </button>
-      )}
-      <button
-        onClick={onDelete}
-        disabled={deletingId === account._id}
-        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
-      >
-        {deletingId === account._id ? (
-          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-        ) : (
-          <Trash2 className="h-3.5 w-3.5" />
-        )}
-      </button>
-    </div>
-  </div>
-);
-
-// ─── Schemas ─────────────────────────────────────────────────────
 const accountSchema = z.object({
   bankName: z.string().min(1, "Select a bank"),
   accountNumber: z.string().regex(/^\d{10}$/, "Must be 10 digits"),
@@ -280,7 +146,6 @@ const withdrawalSchema = z.object({
 });
 type WithdrawalForm = z.infer<typeof withdrawalSchema>;
 
-// ─── MAIN WALLET PAGE ────────────────────────────────────────────
 export const WalletPage: React.FC = () => {
   const qc = useQueryClient();
   const [withdrawModal, setWithdrawModal] = useState(false);
@@ -288,7 +153,6 @@ export const WalletPage: React.FC = () => {
 
   const { business, updateBusiness } = useAuthStore();
 
-  // ── Data fetching ─────────────────────────────────────────────
   const { data: walletData, isLoading } = useQuery({
     queryKey: ["wallet"],
     queryFn: () =>
@@ -306,7 +170,6 @@ export const WalletPage: React.FC = () => {
         .then((r) => r.data),
   });
 
-  // ── Mutations ─────────────────────────────────────────────────
   const requestMutation = useMutation({
     mutationFn: (d: WithdrawalForm) =>
       walletService.requestWithdrawal(business?.id || "", {
@@ -340,13 +203,8 @@ export const WalletPage: React.FC = () => {
     },
   });
 
-  // ── Forms ─────────────────────────────────────────────────────
   const wForm = useForm<WithdrawalForm>({
     resolver: zodResolver(withdrawalSchema),
-  });
-  const aForm = useForm<AccountForm>({
-    resolver: zodResolver(accountSchema),
-    defaultValues: { isDefault: false },
   });
 
   const watchedAmount = wForm.watch("amount");
@@ -377,7 +235,6 @@ export const WalletPage: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6 max-w-6xl animate-fade-in">
-      {/* ── Header ── */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Wallet</h1>
@@ -401,7 +258,6 @@ export const WalletPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* ── No payout account warning ── */}
       {!hasPayoutAccount && (
         <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
@@ -416,7 +272,6 @@ export const WalletPage: React.FC = () => {
         </div>
       )}
 
-      {/* ── Balance cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <BalanceCard
           label="Available Balance"
@@ -454,9 +309,7 @@ export const WalletPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* ── LEFT: Transaction history + Withdrawals ── */}
         <div className="xl:col-span-2 space-y-5">
-          {/* Withdrawal history */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between flex-wrap gap-2">
@@ -578,11 +431,9 @@ export const WalletPage: React.FC = () => {
           </Card>
         </div>
 
-        {/* ── RIGHT: Payout accounts ── */}
         <EditBankDetailsCard />
       </div>
 
-      {/* ── WITHDRAWAL MODAL ── */}
       {withdrawModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div
@@ -624,7 +475,6 @@ export const WalletPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Amount */}
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700">
                   Amount (₦) <span className="text-red-500">*</span>
@@ -649,7 +499,6 @@ export const WalletPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Fee preview */}
               {watchedAmount > 0 && (
                 <div className="bg-gray-50 rounded-xl px-4 py-3 space-y-1.5 text-sm">
                   <div className="flex justify-between">
@@ -674,7 +523,6 @@ export const WalletPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Optional note */}
               <div className="flex flex-col gap-1">
                 <label className="text-sm font-medium text-gray-700">
                   Note (optional)

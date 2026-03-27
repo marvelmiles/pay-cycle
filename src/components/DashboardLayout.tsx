@@ -11,7 +11,6 @@ import {
   LogOut,
   Menu,
   ChevronDown,
-  Bell,
   Zap,
   Wallet,
 } from "lucide-react";
