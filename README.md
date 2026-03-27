@@ -84,13 +84,13 @@ Built on top of **Interswitch** as the payment gateway, PayCycle handles the ful
 
 ### Backend
 
-| Technology           | Purpose                 |
-| -------------------- | ----------------------- |
-| Node.js + TypeScript | Runtime & type safety   |
-| Express              | HTTP server & routing   |
-| MongoDB + Mongoose   | Database & ODM          |
-| Redis                | Caching & rate limiting |
-| JWT                  | Authentication          |
+| Technology           | Purpose               |
+| -------------------- | --------------------- |
+| Node.js + TypeScript | Runtime & type safety |
+| Express              | HTTP server & routing |
+| MongoDB + Mongoose   | Database & ODM        |
+| Express Limiter      | rate limiting         |
+| JWT                  | Authentication        |
 
 ---
 
