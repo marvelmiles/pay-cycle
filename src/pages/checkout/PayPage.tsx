@@ -77,9 +77,9 @@ const cardSchema = z.object({
     .string()
     .min(1, "Required")
     .transform((v) => v.replace(/\s/g, ""))
-    .refine((v) => /^\d{19}$/.test(v), "Invalid card number"),
+    .refine((v) => /^\d{16,19}$/.test(v), "Invalid card number"),
   expiry: z.string().regex(/^\d{2}\/\d{2}$/, "Use MM/YY format"),
-  cvv: z.string().regex(/^\d{3,4}$/, "CVV must be 3 or 4 digits"),
+  cvv: z.string().regex(/^\d{2,4}$/, "CVV must be 2 or 4 digits"),
   cardName: z.string().min(2, "Enter name as on card"),
   cardPin: z.string().min(4, "Minimum of 4 digit"),
 });
@@ -372,10 +372,15 @@ export const PayPage: React.FC = () => {
       else setOpenConfirmPayment(true);
 
       setPaying(false);
-    } catch {
-      setPayError(
-        "Payment failed. Please check your card details and try again.",
-      );
+    } catch (err) {
+      let message =
+        (err as any)?.response?.data?.errors?.[0]?.message ||
+        "Please check your card details and try again.";
+
+      if (message.toLowerCase().indexOf("auth data") > -1)
+        message = "Card details is invalid or payment server can't be reached.";
+
+      setPayError(`Payment failed. ${message}`);
       setPaying(false);
     }
   };
@@ -809,7 +814,7 @@ export const PayPage: React.FC = () => {
                             label="CVV"
                             error={card.formState.errors.cvv?.message}
                             icon={<KeyRound className="h-4 w-4" />}
-                            hint="3 or 4 digits on back"
+                            hint="2 or 4 digits on back"
                           >
                             {(cls) => (
                               <input
