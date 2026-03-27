@@ -34,7 +34,7 @@ Built on top of **Interswitch** as the payment gateway, PayCycle handles the ful
 | 👥 **Customer Management**  | Auto-creates customer profiles on payment; track lifetime value               |
 | 📊 **Transaction Tracking** | Full transaction history with status, gateway ref, and detail view            |
 | 💰 **Wallet & Payouts**     | Available balance, withdrawal requests, payout account management             |
-| 📈 **Analytics Dashboard**  | Revenue charts, MRR, churn rate, payment success rate                         |
+| 📈 **Analytics Dashboard**  | Revenue charts, Montly Revenue, Transaction stats, payment success rate       |
 | 🔐 **JWT Authentication**   | Secure login, registration, and refresh token support                         |
 
 ---
@@ -138,7 +138,7 @@ cd pay-cycle
 pnpm install
 
 # Copy the environment file
-cp .env.example .env
+cp .env
 ```
 
 Open `.env` and fill in your values:
