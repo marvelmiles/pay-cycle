@@ -220,12 +220,12 @@ Business sees revenue in Dashboard, Transactions, Wallet
 
 ## 👥 Team
 
-| Name                       | Role                                          |
-| -------------------------- | --------------------------------------------- |
-| **Marvellous Akinrinmola** | Fullstack Developer — Chief Technical Officer |
-| **Olamilekan Muhammed**    | Product Designer / Project Manager            |
-| **Hassan Saidu**           | Backend Developer                             |
-| **Oketola Samuel**         | Frontend Developer                            |
+| Name                       | Role                               |
+| -------------------------- | ---------------------------------- |
+| **Marvellous Akinrinmola** | Fullstack Developer                |
+| **Olamilekan Muhammed**    | Product Designer / Project Manager |
+| **Hassan Saidu**           | Backend Developer                  |
+| **Oketola Samuel**         | Frontend Developer                 |
 
 ---
 
