@@ -64,7 +64,7 @@ Built on top of **Interswitch** as the payment gateway, PayCycle handles the ful
 
 ## 🖥️ Tech Stack
 
-### Frontend
+### Key Frontend Technology
 
 | Technology                                                                   | Purpose                             |
 | ---------------------------------------------------------------------------- | ----------------------------------- |
@@ -79,15 +79,15 @@ Built on top of **Interswitch** as the payment gateway, PayCycle handles the ful
 | [Lucide React](https://lucide.dev)                                           | Icon library                        |
 | [Interswitch Inline SDK](https://developer.interswitchgroup.com)             | Payment gateway                     |
 
-### Backend
+### Key Backend Technology
 
-| Technology           | Purpose               |
-| -------------------- | --------------------- |
-| Node.js + TypeScript | Runtime & type safety |
-| Express              | HTTP server & routing |
-| MongoDB + Mongoose   | Database & ODM        |
-| Express Limiter      | rate limiting         |
-| JWT                  | Authentication        |
+| Technology           | Purpose                    |
+| -------------------- | -------------------------- |
+| Node.js + TypeScript | Runtime & type safety      |
+| Express              | HTTP server & routing      |
+| MongoDB + Mongoose   | Database & ODM             |
+| Cloudinary           | file uploading and storage |
+| JWT                  | Authentication             |
 
 ---
 
@@ -137,7 +137,7 @@ cd pay-cycle
 # Install dependencies
 pnpm install
 
-# Create the environment file in the root folder
+# Create the environment file in the root folder add the key-values pairs
 ```
 
 Open `.env` and fill in your values:
@@ -152,7 +152,7 @@ VITE_INTERSWITCH_PAYABLE_CODE=Default_Payable_{{MERCHANT_CODE}}
 VITE_INTERSWITCH_MERCHANT_CODE={{MERCHANT_CODE}}
 
 # Backend API
-VITE_API_URL="http://localhost:5000/api/v1"
+VITE_API_URL="https://pay-cycle-backend.onrender.com/api/v1"
 ```
 
 > **Note:** `VITE_INTERSWITCH_CLIENT_ID` and `VITE_INTERSWITCH_CLIENT_SECRET` are obtained from the [Interswitch Developer Portal](https://developer.interswitchgroup.com). Use sandbox credentials for development.
@@ -179,15 +179,15 @@ pnpm preview
 
 ## 🔑 Environment Variables Reference
 
-| Variable                         | Description                   | Example                              |
-| -------------------------------- | ----------------------------- | ------------------------------------ |
-| `VITE_INTERSWITCH_CLIENT_ID`     | Interswitch app Client ID     | From dev portal                      |
-| `VITE_INTERSWITCH_CLIENT_SECRET` | Interswitch app Client Secret | From dev portal                      |
-| `VITE_INTERSWITCH_BASE_URL`      | Interswitch API base URL      | `https://sandbox.interswitchng.com`  |
-| `VITE_INTERSWITCH_PASSPORT_URL`  | Interswitch OAuth URL         | `https://passport.interswitchng.com` |
-| `VITE_INTERSWITCH_PAYABLE_CODE`  | Interswitch payable item code | `Default_Payable_{{MERCHANT_CODE}}`  |
-| `VITE_INTERSWITCH_MERCHANT_CODE` | Interswitch merchant code     | `{{MERCHANT_CODE}}`                  |
-| `VITE_API_URL`                   | Backend API base URL          | `http://localhost:5000/api/v1`       |
+| Variable                         | Description                   | Example                                         |
+| -------------------------------- | ----------------------------- | ----------------------------------------------- |
+| `VITE_INTERSWITCH_CLIENT_ID`     | Interswitch app Client ID     | From dev portal                                 |
+| `VITE_INTERSWITCH_CLIENT_SECRET` | Interswitch app Client Secret | From dev portal                                 |
+| `VITE_INTERSWITCH_BASE_URL`      | Interswitch API base URL      | `https://sandbox.interswitchng.com`             |
+| `VITE_INTERSWITCH_PASSPORT_URL`  | Interswitch OAuth URL         | `https://passport.interswitchng.com`            |
+| `VITE_INTERSWITCH_PAYABLE_CODE`  | Interswitch payable item code | `Default_Payable_{{MERCHANT_CODE}}`             |
+| `VITE_INTERSWITCH_MERCHANT_CODE` | Interswitch merchant code     | `{{MERCHANT_CODE}}`                             |
+| `VITE_API_URL`                   | Backend API base URL          | `https://pay-cycle-backend.onrender.com/api/v1` |
 
 ---
 
