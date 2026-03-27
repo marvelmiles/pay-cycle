@@ -132,14 +132,6 @@ const BalanceCard: React.FC<{
   </div>
 );
 
-const accountSchema = z.object({
-  bankName: z.string().min(1, "Select a bank"),
-  accountNumber: z.string().regex(/^\d{10}$/, "Must be 10 digits"),
-  accountName: z.string().min(2, "Enter account name"),
-  isDefault: z.boolean().default(false),
-});
-type AccountForm = z.infer<typeof accountSchema>;
-
 const withdrawalSchema = z.object({
   amount: z.coerce.number().min(1000, "Minimum withdrawal is ₦1,000"),
   note: z.string().optional(),
