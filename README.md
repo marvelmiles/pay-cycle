@@ -137,8 +137,7 @@ cd pay-cycle
 # Install dependencies
 pnpm install
 
-# Copy the environment file
-cp .env
+# Create the environment file in the root folder
 ```
 
 Open `.env` and fill in your values:
