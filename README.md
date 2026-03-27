@@ -22,6 +22,10 @@ PayCycle is a business billing and payment management platform built for the Nig
 
 Built on top of **Interswitch** as the payment gateway, PayCycle handles the full payment lifecycle: from creating a product, generating a checkout link, collecting card details with OTP verification, recording transactions, and managing payouts — all within a single, branded dashboard.
 
+**Endpoint breakdown** is documented at the end of the file
+
+Please read our **Limitation & Blocker** section with interswitch documentation.
+
 ---
 
 ## ✨ Features
@@ -226,9 +230,263 @@ Business sees revenue in Dashboard, Transactions, Wallet
 
 ---
 
-## 📄 License
+## API Endpoint Breakdown
 
-This project was built for a hackathon competition. All rights reserved by the PayCycle team.
+```
+
+[Register]
+
+endpoint: /auth/register
+method: POST
+payload: {
+  firstName: string,
+  lastName: string,
+  email: string,
+  password: string
+  businessName: string;
+}
+
+[Login]
+
+endpoint: /auth/login
+method: POST
+payload: {
+  email: string,
+  password: string
+}
+
+[Refresh Token]
+
+endpoint: /auth/refresh
+method: POST
+payload: {}
+
+[Logout]
+
+endpoint: /auth/logout
+method: POST
+auth: required
+payload: {}
+
+[Get Transactions]
+
+endpoint: /transactions
+method: GET
+auth: required
+
+[Get Single Transaction]
+
+endpoint: /transactions/:id
+method: GET
+auth: required
+params: {
+  id: string
+}
+
+
+[Dashboard Stats]
+
+endpoint: /analytics/dashboard
+method: GET
+auth: required
+
+[Revenue Chart]
+
+endpoint: /analytics/revenue
+method: GET
+auth: required
+
+
+[Get Wallet Details]
+
+endpoint: /wallet/:businessId
+method: GET
+auth: required
+params: {
+  businessId: string
+}
+
+
+[Get Withdrawals]
+
+endpoint: /wallet/withdrawals/:businessId
+method: GET
+auth: required
+
+[Create Withdrawal Request]
+
+endpoint: /wallet/withdraw/:businessId
+method: POST
+auth: required
+payload: {
+  amount: number,
+  note?: object
+}
+
+[Cancel Withdrawal Request]
+
+endpoint: /wallet/withdraw/:id/:businessId/cancel
+method: POST
+auth: required
+params: {
+  id: string,
+  businessId: string
+}
+
+[Get Products]
+
+endpoint: /products
+method: GET
+auth: required
+
+[Get Product]
+
+endpoint: /products/:id
+method: GET
+auth: required
+
+[Create Product]
+
+endpoint: /products
+method: POST
+auth: required
+payload: {
+  name: string,
+  price: number,
+  description?: string
+  features: string[]
+}
+
+[Update Product]
+
+endpoint: /products/:id
+method: PUT
+auth: required
+
+[Delete Product]
+
+endpoint: /products/:id
+method: DELETE
+auth: required
+
+[Card Payment]
+
+endpoint: /pay/card-payment
+method: POST
+payload:
+{
+      cardDetails: {
+  cvv: string;
+  exp_date: string;
+  pan: string;
+  pin: string;
+},
+      amount:string|number,
+      customerDetails: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+      },
+      paymentType: "recurring"|"one_time";
+      businessId: string;
+      productId: string;
+    }
+
+[Verify OTP]
+
+endpoint: /pay/otp/verify
+method: POST
+payload: {
+  paymentId: string;
+  otp: string,
+  transactionRef: string
+}
+
+[Confirm Payment]
+
+endpoint: /pay/confirm-payment
+method: GET
+
+
+[Get Payment Links]
+
+endpoint: /payment-links
+method: GET
+auth: required
+
+[Get Payment Link]
+
+endpoint: /payment-links/:id
+method: GET
+
+[Create Payment Link]
+
+endpoint: /payment-links
+method: POST
+auth: required
+
+[Update Payment Link]
+
+endpoint: /payment-links/:id
+method: PUT
+auth: required
+
+[Delete Payment Link]
+
+endpoint: /payment-links/:id
+method: DELETE
+auth: required
+
+[Get Customers]
+
+endpoint: /customers
+method: GET
+auth: required
+
+[Get Customer]
+
+endpoint: /customers/:id
+method: GET
+auth: required
+
+[Create Customer]
+
+endpoint: /customers
+method: POST
+auth: required
+
+[Update Customer]
+
+endpoint: /customers/:id
+method: PUT
+auth: required
+
+[Get Profile]
+
+endpoint: /profile/me
+method: GET
+auth: required
+
+[Update Profile]
+
+endpoint: /profile/me
+method: PUT
+auth: required
+content-type: multipart/form-data
+payload: {
+    image?:File,
+    ...others
+}
+
+[Update Business Profile]
+
+endpoint: /profile/business/:id
+method: PUT
+auth: required
+content-type: multipart/form-data
+
+```
 
 ---
 
