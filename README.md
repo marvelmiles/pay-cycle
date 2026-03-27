@@ -225,7 +225,7 @@ Business sees revenue in Dashboard, Transactions, Wallet
 | **Marvellous Akinrinmola** | Fullstack Developer — Chief Technical Officer |
 | **Olamilekan Muhammed**    | Product Designer / Project Manager            |
 | **Hassan Saidu**           | Backend Developer                             |
-| **Oketola Samuel**         | Fullstack Developer                           |
+| **Oketola Samuel**         | Frontend Developer                            |
 
 ---
 
