@@ -40,9 +40,9 @@ export const EditBankDetailsCard = () => {
   const bankForm = useForm<BankForm>({
     resolver: zodResolver(bankSchema),
     defaultValues: {
-      name: business?.bank.name || "",
-      accountName: business?.bank.accountName || "",
-      accountNumber: business?.bank.accountNumber || "",
+      name: business?.bank?.name || "",
+      accountName: business?.bank?.accountName || "",
+      accountNumber: business?.bank?.accountNumber || "",
     },
   });
 
@@ -56,6 +56,8 @@ export const EditBankDetailsCard = () => {
       const res = await profileService.updateBusiness(business?.id || "", {
         bank: data,
       });
+
+      toast.success("Bank details updated successfully.");
 
       updateBusiness({
         ...business,
